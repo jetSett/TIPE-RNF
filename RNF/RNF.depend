@@ -1,0 +1,387 @@
+# depslib dependency file v1.0
+1435525610 source:/home/joel/Prog/OCR/RNF/main.cpp
+	<iostream>
+	"Application.hpp"
+
+1438526231 /home/joel/Prog/OCR/RNF/Reseau.hpp
+	<iostream>
+	<vector>
+	<algorithm>
+	<random>
+	<cassert>
+	<fstream>
+	<sstream>
+	<tuple>
+	<armadillo>
+	"functs.hpp"
+
+1438526339 source:/home/joel/Prog/OCR/RNF/Reseau.cpp
+	"Reseau.hpp"
+	"Debug.hpp"
+
+1437480162 source:/home/joel/Prog/OCR/RNF/functs.cpp
+	<map>
+	"functs.hpp"
+
+1435535100 /home/joel/Prog/OCR/RNF/functs.hpp
+	<exception>
+	<armadillo>
+	<string>
+	"Debug.hpp"
+
+1432139542 /home/joel/Prog/OCR/RNF/Debug.hpp
+	<iostream>
+	<vector>
+
+1435869321 source:/home/joel/Prog/OCR/RNF/Application.cpp
+	<random>
+	"Application.hpp"
+
+1435525065 /home/joel/Prog/OCR/RNF/Application.hpp
+	<string>
+	<random>
+	<boost/program_options.hpp>
+	<armadillo>
+	"functs.hpp"
+	"Reseau.hpp"
+
+1438526067 source:/home/joel/Prog/OCR/RNF/Entrainements.cpp
+	"Reseau.hpp"
+
+1437500864 source:/home/joel/Prog/OCR/RNF/python.cpp
+	<Python.h>
+	<boost/python.hpp>
+	<sstream>
+	"Reseau.hpp"
+
+1434728050 /usr/include/python3.4/Python.h
+	"patchlevel.h"
+	"pyconfig.h"
+	"pymacconfig.h"
+	<limits.h>
+	<stdio.h>
+	<string.h>
+	<errno.h>
+	<stdlib.h>
+	<unistd.h>
+	<stddef.h>
+	<assert.h>
+	"pyport.h"
+	"pymacro.h"
+	"pyatomic.h"
+	"pymath.h"
+	"pytime.h"
+	"pymem.h"
+	"object.h"
+	"objimpl.h"
+	"typeslots.h"
+	"pyhash.h"
+	"pydebug.h"
+	"bytearrayobject.h"
+	"bytesobject.h"
+	"unicodeobject.h"
+	"longobject.h"
+	"longintrepr.h"
+	"boolobject.h"
+	"floatobject.h"
+	"complexobject.h"
+	"rangeobject.h"
+	"memoryobject.h"
+	"tupleobject.h"
+	"listobject.h"
+	"dictobject.h"
+	"enumobject.h"
+	"setobject.h"
+	"methodobject.h"
+	"moduleobject.h"
+	"funcobject.h"
+	"classobject.h"
+	"fileobject.h"
+	"pycapsule.h"
+	"traceback.h"
+	"sliceobject.h"
+	"cellobject.h"
+	"iterobject.h"
+	"genobject.h"
+	"descrobject.h"
+	"warnings.h"
+	"weakrefobject.h"
+	"structseq.h"
+	"namespaceobject.h"
+	"codecs.h"
+	"pyerrors.h"
+	"pystate.h"
+	"pyarena.h"
+	"modsupport.h"
+	"pythonrun.h"
+	"ceval.h"
+	"sysmodule.h"
+	"intrcheck.h"
+	"import.h"
+	"abstract.h"
+	"bltinmodule.h"
+	"compile.h"
+	"eval.h"
+	"pyctype.h"
+	"pystrtod.h"
+	"pystrcmp.h"
+	"dtoa.h"
+	"fileutils.h"
+	"pyfpe.h"
+
+1434728050 /usr/include/python3.4/patchlevel.h
+
+1434728053 /usr/include/python3.4/pyconfig.h
+	<x86_64-linux-gnu/python3.4m/pyconfig.h>
+	<x86_64-linux-gnux32/python3.4m/pyconfig.h>
+	<i386-linux-gnu/python3.4m/pyconfig.h>
+	<aarch64-linux-gnu/python3.4m/pyconfig.h>
+	<alpha-linux-gnu/python3.4m/pyconfig.h>
+	<arm-linux-gnueabihf/python3.4m/pyconfig.h>
+	<arm-linux-gnueabi/python3.4m/pyconfig.h>
+	<hppa-linux-gnu/python3.4m/pyconfig.h>
+	<ia64-linux-gnu/python3.4m/pyconfig.h>
+	<m68k-linux-gnu/python3.4m/pyconfig.h>
+	<mipsel-linux-gnu/python3.4m/pyconfig.h>
+	<mips64el-linux-gnuabin32/python3.4m/pyconfig.h>
+	<mips64el-linux-gnuabi64/python3.4m/pyconfig.h>
+	<mips-linux-gnu/python3.4m/pyconfig.h>
+	<mips64-linux-gnuabin32/python3.4m/pyconfig.h>
+	<mips64-linux-gnuabi64/python3.4m/pyconfig.h>
+	<or1k-linux-gnu/python3.4m/pyconfig.h>
+	<powerpc-linux-gnuspe/python3.4m/pyconfig.h>
+	<powerpc64le-linux-gnu/python3.4m/pyconfig.h>
+	<powerpc64-linux-gnu/python3.4m/pyconfig.h>
+	<powerpc-linux-gnu/python3.4m/pyconfig.h>
+	<s390x-linux-gnu/python3.4m/pyconfig.h>
+	<s390-linux-gnu/python3.4m/pyconfig.h>
+	<sh4-linux-gnu/python3.4m/pyconfig.h>
+	<sparc64-linux-gnu/python3.4m/pyconfig.h>
+	<sparc-linux-gnu/python3.4m/pyconfig.h>
+	<x86_64-kfreebsd-gnu/python3.4m/pyconfig.h>
+	<i386-kfreebsd-gnu/python3.4m/pyconfig.h>
+	<i386-gnu/python3.4m/pyconfig.h>
+
+1434728050 /usr/include/python3.4/pymacconfig.h
+
+1434728050 /usr/include/python3.4/pyport.h
+	"pyconfig.h"
+	<inttypes.h>
+	<stdint.h>
+	<stdlib.h>
+	<ieeefp.h>
+	<math.h>
+	<sys/time.h>
+	<time.h>
+	<sys/time.h>
+	<time.h>
+	<sys/select.h>
+	<sys/stat.h>
+	<stat.h>
+	<sys/types.h>
+	<sys/termio.h>
+	<termios.h>
+	<osreldate.h>
+	<ctype.h>
+	<wctype.h>
+
+1434728050 /usr/include/python3.4/pymacro.h
+
+1434728050 /usr/include/python3.4/pyatomic.h
+	"dynamic_annotations.h"
+
+1434728050 /usr/include/python3.4/dynamic_annotations.h
+
+1434728050 /usr/include/python3.4/pymath.h
+	"pyconfig.h"
+
+1434728050 /usr/include/python3.4/pytime.h
+	"pyconfig.h"
+	"object.h"
+
+1434728050 /usr/include/python3.4/object.h
+
+1434728050 /usr/include/python3.4/pymem.h
+	"pyport.h"
+
+1434728050 /usr/include/python3.4/objimpl.h
+	"pymem.h"
+
+1434728050 /usr/include/python3.4/typeslots.h
+
+1434728050 /usr/include/python3.4/pyhash.h
+
+1434728050 /usr/include/python3.4/pydebug.h
+
+1434728050 /usr/include/python3.4/bytearrayobject.h
+	<stdarg.h>
+
+1434728050 /usr/include/python3.4/bytesobject.h
+	<stdarg.h>
+
+1434728050 /usr/include/python3.4/unicodeobject.h
+	<stdarg.h>
+	<ctype.h>
+	<time.h>
+	<wchar.h>
+
+1434728050 /usr/include/python3.4/longobject.h
+
+1434728050 /usr/include/python3.4/longintrepr.h
+
+1434728050 /usr/include/python3.4/boolobject.h
+
+1434728050 /usr/include/python3.4/floatobject.h
+
+1434728050 /usr/include/python3.4/complexobject.h
+
+1434728050 /usr/include/python3.4/rangeobject.h
+
+1434728050 /usr/include/python3.4/memoryobject.h
+
+1434728050 /usr/include/python3.4/tupleobject.h
+
+1434728050 /usr/include/python3.4/listobject.h
+
+1434728050 /usr/include/python3.4/dictobject.h
+
+1434728050 /usr/include/python3.4/enumobject.h
+
+1434728050 /usr/include/python3.4/setobject.h
+
+1434728050 /usr/include/python3.4/methodobject.h
+
+1434728050 /usr/include/python3.4/moduleobject.h
+
+1434728050 /usr/include/python3.4/funcobject.h
+
+1434728050 /usr/include/python3.4/classobject.h
+
+1434728050 /usr/include/python3.4/fileobject.h
+
+1434728050 /usr/include/python3.4/pycapsule.h
+
+1434728050 /usr/include/python3.4/traceback.h
+	"pystate.h"
+
+1434728050 /usr/include/python3.4/pystate.h
+
+1434728050 /usr/include/python3.4/sliceobject.h
+
+1434728050 /usr/include/python3.4/cellobject.h
+
+1434728050 /usr/include/python3.4/iterobject.h
+
+1434728050 /usr/include/python3.4/genobject.h
+
+1434728050 /usr/include/python3.4/descrobject.h
+
+1434728050 /usr/include/python3.4/warnings.h
+
+1434728050 /usr/include/python3.4/weakrefobject.h
+
+1434728050 /usr/include/python3.4/structseq.h
+
+1434728050 /usr/include/python3.4/namespaceobject.h
+
+1434728050 /usr/include/python3.4/codecs.h
+
+1434728050 /usr/include/python3.4/pyerrors.h
+	<stdarg.h>
+
+1434728050 /usr/include/python3.4/pyarena.h
+
+1434728050 /usr/include/python3.4/modsupport.h
+	<stdarg.h>
+
+1434728050 /usr/include/python3.4/pythonrun.h
+
+1434728050 /usr/include/python3.4/ceval.h
+
+1434728050 /usr/include/python3.4/sysmodule.h
+
+1434728050 /usr/include/python3.4/intrcheck.h
+
+1434728050 /usr/include/python3.4/import.h
+
+1434728050 /usr/include/python3.4/abstract.h
+
+1434728050 /usr/include/python3.4/bltinmodule.h
+
+1434728050 /usr/include/python3.4/compile.h
+	"code.h"
+
+1434728050 /usr/include/python3.4/code.h
+
+1434728050 /usr/include/python3.4/eval.h
+
+1434728050 /usr/include/python3.4/pyctype.h
+
+1434728050 /usr/include/python3.4/pystrtod.h
+
+1434728050 /usr/include/python3.4/pystrcmp.h
+
+1434728050 /usr/include/python3.4/dtoa.h
+
+1434728050 /usr/include/python3.4/fileutils.h
+
+1434728050 /usr/include/python3.4/pyfpe.h
+	<signal.h>
+	<setjmp.h>
+	<math.h>
+
+1437480162 source:/home/joel/Prog/TIPE/RNF/functs.cpp
+	<map>
+	"functs.hpp"
+
+1435535100 /home/joel/Prog/TIPE/RNF/functs.hpp
+	<exception>
+	<armadillo>
+	<string>
+	"Debug.hpp"
+
+1432139542 /home/joel/Prog/TIPE/RNF/Debug.hpp
+	<iostream>
+	<vector>
+
+1441312628 source:/home/joel/Prog/TIPE/RNF/python.cpp
+	<Python.h>
+	<boost/python.hpp>
+	<sstream>
+	"Reseau.hpp"
+
+1445701761 /home/joel/Prog/TIPE/RNF/Reseau.hpp
+	<iostream>
+	<vector>
+	<algorithm>
+	<random>
+	<cassert>
+	<fstream>
+	<sstream>
+	<tuple>
+	<armadillo>
+	"functs.hpp"
+
+1441312554 source:/home/joel/Prog/TIPE/RNF/Reseau.cpp
+	"Reseau.hpp"
+	"Debug.hpp"
+
+1445704285 source:/home/joel/Prog/TIPE/RNF/Entrainements.cpp
+	"Reseau.hpp"
+
+1435525610 source:/home/joel/Prog/TIPE/RNF/main.cpp
+	<iostream>
+	"Application.hpp"
+
+1435525065 /home/joel/Prog/TIPE/RNF/Application.hpp
+	<string>
+	<random>
+	<boost/program_options.hpp>
+	<armadillo>
+	"functs.hpp"
+	"Reseau.hpp"
+
+1445703933 source:/home/joel/Prog/TIPE/RNF/debug.cpp
+	<iostream>
+	"Reseau.hpp"
+

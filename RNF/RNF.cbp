@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="RNF" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="all">
+				<Option output="./RNF" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-pg" />
+					<Add option="-g" />
+				</Compiler>
+				<Linker>
+					<Add option="-pg" />
+				</Linker>
+			</Target>
+			<Target title="prod">
+				<Option platforms="Unix;" />
+				<Option output="./RNFprod" prefix_auto="1" extension_auto="1" />
+				<Option object_output=".objs/prod/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Option use_console_runner="0" />
+				<Compiler>
+					<Add option="-march=nocona" />
+					<Add option="-fexpensive-optimizations" />
+					<Add option="-O3" />
+				</Compiler>
+			</Target>
+			<Target title="lib">
+				<Option output="/home/joel/Prog/TIPE/Routines python/RNF" prefix_auto="0" extension_auto="1" />
+				<Option object_output=".objs/lib/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-march=nocona" />
+					<Add option="-fexpensive-optimizations" />
+					<Add option="-O3" />
+					<Add option="-fPIC" />
+					<Add directory="/usr/include/python3.4" />
+				</Compiler>
+				<Linker>
+					<Add library="libboost_python-py33" />
+					<Add library="python3.4" />
+					<Add directory="/usr/lib/python3.4/config-3.4m-x86_64-linux-gnu" />
+				</Linker>
+			</Target>
+			<Target title="debug">
+				<Option output="RNFDebug" prefix_auto="1" extension_auto="1" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+			<Add option="-DARMA_64BIT_WORD" />
+		</Compiler>
+		<Linker>
+			<Add library="armadillo" />
+			<Add library="boost_program_options" />
+		</Linker>
+		<Unit filename="Application.cpp">
+			<Option target="all" />
+			<Option target="prod" />
+		</Unit>
+		<Unit filename="Application.hpp">
+			<Option target="all" />
+			<Option target="prod" />
+		</Unit>
+		<Unit filename="Debug.hpp">
+			<Option target="all" />
+			<Option target="lib" />
+			<Option target="debug" />
+		</Unit>
+		<Unit filename="Entrainements.cpp" />
+		<Unit filename="Reseau.cpp" />
+		<Unit filename="Reseau.hpp" />
+		<Unit filename="debug.cpp">
+			<Option target="debug" />
+		</Unit>
+		<Unit filename="functs.cpp" />
+		<Unit filename="functs.hpp" />
+		<Unit filename="main.cpp">
+			<Option target="all" />
+			<Option target="prod" />
+		</Unit>
+		<Unit filename="python.cpp">
+			<Option target="lib" />
+		</Unit>
+		<Extensions>
+			<code_completion />
+			<debugger />
+			<envvars />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

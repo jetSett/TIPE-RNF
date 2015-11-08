@@ -1,0 +1,11 @@
+# depslib dependency file v1.0
+1424736711 source:/home/joel/Prog/OCR/separateurCaract/main.cpp
+	<iostream>
+	"utils.hpp"
+
+1424735393 /home/joel/Prog/OCR/separateurCaract/utils.hpp
+	<opencv2/opencv.hpp>
+
+1424735355 source:/home/joel/Prog/OCR/separateurCaract/utils.cpp
+	"utils.hpp"
+
