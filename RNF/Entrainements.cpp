@@ -3,89 +3,59 @@
 using namespace std;
 using namespace arma;
 
-double Reseau::descente_gradiant_1(Ensemble& app, double epsilon){
-    const std::vector<std::pair<arma::vec, arma::vec>>& ens = app.ens;
-    int M = poids_couches.size();
+double Reseau::descente_gradiant(Ensemble& app, double epsilon){
 
-    double erreurQuad = 0; /// Calcul de l'erreur quadratique
+    const std::vector<std::pair<arma::vec, arma::vec>>& ens = app.ens;
+    unsigned int C = poids_couches.size()-1;
+
+    auto& W = poids_couches;
+
+    unsigned int S = _sorties, E = _entrees;
+
+    double erreur = 0; /// Calcul de l'erreur
 
     for(unsigned p = 0; p<ens.size(); ++p){
-        vector<vec> a(M+1);
-        a[0] = ens[p].first;
-        for(int k = 1; k<=M; ++k){
-            a[k] = appliquerFonction(poids_couches[k-1]*a[k-1]-coefBiais[k-1], activ[k-1], 0);
-        } ///Aller
+        vec Entree = ens[p].first;
+        vec T = ens[p].second;
 
-        vector<mat> e(M);
-
-        double erreur = as_scalar(ens[p].second-a[M]);
-
-        erreurQuad += erreur*erreur;
-
-        e[M-1] = -2*fPoint(coefBiais[M-1], activ[M-1])*coefBiais[M-1]*(ens[p].second-a[M]);
-        for(int k = M-2; k>=0; --k){
-            e[k] = fPoint(coefBiais[k], activ[k])*poids_couches[k+1].t()*e[k+1];
-        } ///Retour
-
-        for(int k = 0; k<M; ++k){
-            poids_couches[k] += -epsilon*e[k]*(a[k].t());
-            coefBiais[k] += epsilon*e[k];
-        } ///On actualise
-    }
-
-    return std::sqrt(erreurQuad);
-}
+        vector<mat> E(C+1);
+        /// propagation dans le sens classique, on garde les E
+        E[0] = appliquerFonction(W[0]*Entree, activ[0], 0);
+        for(unsigned n=1; n<=C; ++n){
+            E[n] = appliquerFonction(W[n]*E[n-1],activ[n], 0);
+        }
+        vec Y = E[C];
 
 
-double Reseau::descente_gradiant_2(Ensemble& app, double epsilon){
-    const std::vector<std::pair<arma::vec, arma::vec>>& ens = app.ens;
-    int M = poids_couches.size();
+        erreur += 0.5*(as_scalar(T-Y)*as_scalar(T-Y));
 
-    double erreurQuad = 0; /// Calcul de l'erreur quadratique
+        vector<mat> V(C+1);
+        ///retropropagation
+        V[C] = appliquerFonction(W[C]*E[C-1], activ[C], 1)%(T-Y);
+        for(unsigned n=C; n>=2; --n){
+            vec K = ((W[n]).t())*V[n];
+            V[n-1] = appliquerFonction(W[n-1]*E[n-2], activ[n-1], 1)%(K);
+        }
+        V[0] = appliquerFonction(W[0]*Entree, activ[0], 1)%(W[1].t()*V[1]);
 
-    for(unsigned p = 0; p<ens.size(); ++p){
-        vector<vec> a(M+1);
-        vector<vec> h(M);
-        a[0] = ens[p].first;
-        for(int k = 1; k<=M; ++k){
-            h[k-1] = poids_couches[k-1]*a[k-1]-coefBiais[k-1];
+        /// mise à jour des poids
 
+        for(unsigned i = 0; i<W[0].n_rows; ++i){
+            for(unsigned j = 0; j<W[0].n_cols; ++j){
+                W[0](i, j) += epsilon*V[0](i)*Entree(j);
+            }
+        }
 
-            a[k] = appliquerFonction(h[k-1], activ[k-1], 0);
-        } ///Aller
-
-        vector<mat> e(M);
-
-        double erreur = as_scalar(ens[p].second-a[M]);
-
-        erreurQuad += erreur*erreur;
-
-        vec y = a[M];
-        vec t = ens[p].second;
-
-        e[M-1] = fPoint(h[M-1], activ[M-1])*(t-y);
-        for(int k = M-2; k>=0; --k){
-
-            mat alpha = poids_couches[k+1].t()*e[k+1];
-
-            e[k] = fPoint(h[k+1], activ[k])%alpha;
-        } ///Retour
-
-        for(int k = 0; k<M; ++k){
-            mat deltaW = poids_couches[k];
-
-            for(int i = 0; i < deltaW.n_rows; ++i){
-                for(int j = 0; j< deltaW.n_cols; ++j){
-                    deltaW(i, j) = e[k][i]*a[k][j];
+        for(unsigned n = 1; n<=C; ++n){
+            for(unsigned i = 0; i<W[n].n_rows; ++i){
+                for(unsigned j = 0; j<W[n].n_cols; ++j){
+                    W[n](i, j) += epsilon*V[n](i)*E[n-1](j);
                 }
             }
-
-            poids_couches[k] += -epsilon*deltaW;
-            coefBiais[k] += epsilon*e[k]; /// on le garde dans le doute
-        } ///On actualise
+        }
     }
 
-    return std::sqrt(erreurQuad);
+    return erreur;
 }
 
 

@@ -23,13 +23,13 @@ double lineaire(double e, int n){
 
 double hardlim(double e, int n){
     if(n>=1) ///dérivée premiere
-        return 1; //test
+        return 0;
     return e<0?0:1;
 }
 
 double hardlims(double e, int n){
     if(n>=1) ///dérivée premiere
-        return 1; //test
+        return 0;
     return e<0?-1:1;
 }
 

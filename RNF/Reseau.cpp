@@ -37,7 +37,8 @@ std::string Ensemble::print_apprentiss(){
 Reseau::Reseau(unsigned entrees, unsigned sorties, unsigned nbCouchesCache,
                 const std::vector<unsigned>& nbNeurParCouche,
                 const std::vector<functionDescriptor>& activations,
-                const std::vector<float>& coefBiasParCouche) : activ(activations){
+                const std::vector<float>& coefBiasParCouche) : activ(activations),
+                _entrees(entrees), _sorties(sorties), _nbCouchesCache(nbCouchesCache){
 
 
     assert(nbNeurParCouche.size() == nbCouchesCache);
@@ -82,7 +83,7 @@ vec Reseau::appliquerFonction(const arma::vec& e, functionDescriptor f, int n){
 vec Reseau::resultat(const vec& e){
     vec s = e;
     for(unsigned i = 0; i<poids_couches.size(); ++i){
-        s = appliquerFonction(poids_couches[i]*s-coefBiais[i], activ[i], 0);
+        s = appliquerFonction(poids_couches[i]*s, activ[i], 0);
     }
     return s;
 }
@@ -131,6 +132,7 @@ void Reseau::save(const std::string& file){
 
 void Reseau::load(const std::string& file){
     ifstream stream(file);
+    assert(stream);
     unsigned s = 0;
     stream >> s;
     coefBiais.resize(s);
@@ -156,6 +158,10 @@ void Reseau::load(const std::string& file){
         f.func = fontionFromString(f.nom);
         activ[i] = f;
     }
+
+    _nbCouchesCache = poids_couches.size() - 1;
+    _entrees = poids_couches[0].n_rows;
+    _sorties = poids_couches[poids_couches.size()-1].n_rows;
 }
 
 std::string Reseau::print_reseau(){
@@ -205,4 +211,12 @@ std::pair<std::vector<arma::mat>, std::vector<arma::mat>> Reseau::gradiants(std:
             paire.first[k] = s[k];
         }
         return paire;
+}
+
+void Reseau::decrire_reseau(){
+    unsigned k = 0;
+    for(auto m : poids_couches){
+        cout << k << " : " << m.n_rows << " x " << m.n_cols << endl;
+        k++;
+    }
 }
