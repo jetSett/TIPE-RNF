@@ -27,6 +27,7 @@ BOOST_PYTHON_MODULE(RNF)
     .def("load", &Ensemble::load)
     .def_readwrite("ens", &Ensemble::ens)
     .def("__del__", emptyFunc<Ensemble>)
+    .def("taille", &Ensemble::taille)
     ;
 
     class_<arma::vec>("vec", init<std::string>())

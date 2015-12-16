@@ -73,11 +73,29 @@ Reseau::Reseau(const std::string& file){
 }
 
 vec Reseau::appliquerFonction(const arma::vec& e, functionDescriptor f, int n){
-    vec s = e;
-    for(unsigned i = 0; i<e.size(); ++i){
-        s(i) = f.func(e(i), n);
+    if(f.nom == "hardlim_vect"){
+        vec s = e;
+        for(unsigned i = 0; i<e.size(); ++i){
+            s(i) = f.func(e(i), n);
+        }
+        double m = max(s);
+        bool c = false;
+        for(unsigned i = 0; i<e.size(); ++i){
+            if(s(i) == m and !c){
+                s(i) = s(i)==m;
+                c = true;
+            }else{
+                s(i) = 0;
+            }
+        }
+        return s;
+    }else{
+        vec s = e;
+        for(unsigned i = 0; i<e.size(); ++i){
+            s(i) = f.func(e(i), n);
+        }
+        return s;
     }
-    return s;
 }
 
 vec Reseau::resultat(const vec& e){
@@ -92,17 +110,10 @@ double Reseau::verification(const Ensemble& ens){
     double erreurQuad = 0;
     for(auto p : ens.ens){
         vec res = resultat(p.first);
-        double erreur = as_scalar(p.second - res);
+        double erreur = accu(p.second - res);
         erreurQuad += erreur*erreur;
     }
     return std::sqrt(erreurQuad);
-}
-
-mat Reseau::fPoint(const vec& n, functionDescriptor f){
-    mat fp = mat(n.size(), n.size(), fill::zeros);
-    for(unsigned j = 0; j<n.size(); ++j)
-        fp(j, j) = f.func(n(j), 1);
-    return fp;
 }
 
 void Reseau::save(const std::string& file){
@@ -189,29 +200,29 @@ std::string Reseau::print_resultat(const Ensemble& ens){
 }
 
 
-std::pair<std::vector<arma::mat>, std::vector<arma::mat>> Reseau::gradiants(std::pair<arma::vec, arma::vec> in_out){
-        std::pair<std::vector<arma::mat>, std::vector<arma::mat>> paire; //en first les coefs de biais, en second les gradiants
-        int M = poids_couches.size();
-        vector<vec> a(M+1);
-        a[0] = in_out.first;
-        for(int k = 1; k<=M; ++k){
-            a[k] = appliquerFonction(poids_couches[k-1]*a[k-1]-coefBiais[k-1], activ[k-1], 0);
-        } ///Aller
-
-        vector<mat> s(M);
-
-        s[M-1] = -2*fPoint(coefBiais[M-1], activ[M-1])*coefBiais[M-1]*(in_out.second-a[M]);
-        for(int k = M-2; k>=0; --k){
-            s[k] = fPoint(coefBiais[k], activ[k])*poids_couches[k+1].t()*s[k+1];
-        } ///Retour
-        paire.first.resize(coefBiais.size());
-        paire.second.resize(poids_couches.size());
-        for(int k = 0; k<M; ++k){
-            paire.second[k] = s[k]*(a[k].t());
-            paire.first[k] = s[k];
-        }
-        return paire;
-}
+//std::pair<std::vector<arma::mat>, std::vector<arma::mat>> Reseau::gradiants(std::pair<arma::vec, arma::vec> in_out){
+//        std::pair<std::vector<arma::mat>, std::vector<arma::mat>> paire; //en first les coefs de biais, en second les gradiants
+//        int M = poids_couches.size();
+//        vector<vec> a(M+1);
+//        a[0] = in_out.first;
+//        for(int k = 1; k<=M; ++k){
+//            a[k] = appliquerFonction(poids_couches[k-1]*a[k-1]-coefBiais[k-1], activ[k-1], 0);
+//        } ///Aller
+//
+//        vector<mat> s(M);
+//
+//        s[M-1] = -2*fPoint(coefBiais[M-1], activ[M-1])*coefBiais[M-1]*(in_out.second-a[M]);
+//        for(int k = M-2; k>=0; --k){
+//            s[k] = fPoint(coefBiais[k], activ[k])*poids_couches[k+1].t()*s[k+1];
+//        } ///Retour
+//        paire.first.resize(coefBiais.size());
+//        paire.second.resize(poids_couches.size());
+//        for(int k = 0; k<M; ++k){
+//            paire.second[k] = s[k]*(a[k].t());
+//            paire.first[k] = s[k];
+//        }
+//        return paire;
+//}
 
 void Reseau::decrire_reseau(){
     unsigned k = 0;

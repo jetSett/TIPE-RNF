@@ -31,6 +31,10 @@ struct Ensemble{
         std::shuffle(std::begin(ens), std::end(ens), engine);
     }
 
+    int taille(){
+        return ens.size();
+    }
+
     void load(const std::string& file);
 };
 
@@ -50,25 +54,24 @@ public:
     void save(const std::string& file);
     void load(const std::string& file);
 
-    arma::mat fPoint(const arma::vec& n, functionDescriptor f);
-
     std::string print_resultat(const Ensemble& ens);
 
     std::string print_reseau();
+    void decrire_reseau();
 
     std::pair<std::vector<arma::mat>, std::vector<arma::mat>> gradiants(std::pair<arma::vec, arma::vec> in_out); //en first les coefs de biais, en second les gradiants
     double verification(const Ensemble& ens);
 
-    double descente_gradiant_1(Ensemble& app, double epsilon); ///retourne l'erreur quadratique
-    double descente_gradiant_2(Ensemble& app, double epsilon); ///retourne l'erreur quadratique
-    double BFGS(Ensemble& app, double epsilon);
+    double descente_gradiant(Ensemble& app, double epsilon);
 
-private:
+//private:
     std::vector<functionDescriptor> activ;
 
     std::vector<arma::vec> coefBiais;
 
     std::vector<arma::mat> poids_couches;
+
+    unsigned _entrees, _sorties, _nbCouchesCache;
 };
 
 #endif // RESEAU_HPP_INCLUDED

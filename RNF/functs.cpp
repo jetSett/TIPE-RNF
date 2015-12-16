@@ -9,6 +9,7 @@ fonctionActivation fontionFromString(std::string name){
     corresp["hardlims"] = hardlims;
     corresp["sigimoide"] = sigimoide;
     corresp["arctan"] = arctan;
+    corresp["hardlim_vect"] = hardlim;
 
     return corresp[name];
 }
@@ -23,13 +24,13 @@ double lineaire(double e, int n){
 
 double hardlim(double e, int n){
     if(n>=1) ///dérivée premiere
-        return 0;
+        return 1;
     return e<0?0:1;
 }
 
 double hardlims(double e, int n){
     if(n>=1) ///dérivée premiere
-        return 0;
+        return 1;
     return e<0?-1:1;
 }
 

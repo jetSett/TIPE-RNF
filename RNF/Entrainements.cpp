@@ -19,24 +19,29 @@ double Reseau::descente_gradiant(Ensemble& app, double epsilon){
         vec T = ens[p].second;
 
         vector<mat> E(C+1);
+
+        vector<mat> H(C+1);
         /// propagation dans le sens classique, on garde les E
-        E[0] = appliquerFonction(W[0]*Entree, activ[0], 0);
+        H[0] = W[0]*Entree;
+        E[0] = appliquerFonction(H[0], activ[0], 0);
         for(unsigned n=1; n<=C; ++n){
-            E[n] = appliquerFonction(W[n]*E[n-1],activ[n], 0);
+            H[n] = W[n]*E[n-1];
+            E[n] = appliquerFonction(H[n],activ[n], 0);
         }
         vec Y = E[C];
 
+        double e = accu(abs(T-Y));
 
-        erreur += 0.5*(as_scalar(T-Y)*as_scalar(T-Y));
+        erreur += 0.5*(e*e);
 
         vector<mat> V(C+1);
         ///retropropagation
         V[C] = appliquerFonction(W[C]*E[C-1], activ[C], 1)%(T-Y);
         for(unsigned n=C; n>=2; --n){
             vec K = ((W[n]).t())*V[n];
-            V[n-1] = appliquerFonction(W[n-1]*E[n-2], activ[n-1], 1)%(K);
+            V[n-1] = appliquerFonction(H[n-1], activ[n-1], 1)%(K);
         }
-        V[0] = appliquerFonction(W[0]*Entree, activ[0], 1)%(W[1].t()*V[1]);
+        V[0] = appliquerFonction(H[0], activ[0], 1)%(W[1].t()*V[1]);
 
         /// mise à jour des poids
 
@@ -57,35 +62,3 @@ double Reseau::descente_gradiant(Ensemble& app, double epsilon){
 
     return erreur;
 }
-
-
-
-//double Reseau::BFGS(Ensemble& app, double epsilon){
-//    const std::vector<std::pair<arma::vec, arma::vec>>& ens = app.ens;
-//
-//    double erreurQuad = 0;
-//
-//    unsigned N = ens.size();
-//    std::vector<mat> M(poids_couches.size());
-//    for(mat & m : M){
-//        m = eye<double>(poids_couches[]);
-//    }
-//
-//
-//    for(unsigned i = 0; i<N; ++i){ /// pour chaques exemples
-//
-//        auto paire = gradiants(app.ens[i]);
-//        vector<mat> gradiantParCouche = paire.second;
-//        vector<mat> modifCoefBiaisParCouche = paire.first;
-//
-//        for(unsigned j = 0; j<poids_couches.size(); ++j){
-//
-//
-////            poids_couches[j] -= epsilon*M[j]*grad;
-//        }
-//
-//
-//    }
-//
-//    return erreurQuad;
-//}
