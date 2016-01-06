@@ -1,11 +1,12 @@
 import random
 
 def fonction(vect):
-	return float(((vect[0]-0.5)**2 + (vect[1]-0.5)**2) <= 0.2**2) #un disque de rayon 0.2 centré en (0.5, 0.5)
+	x, y = vect
+	return int( (0.25 <= x <= 0.75) and (0.25 <= x <= 0.75))
 
 random.seed()
 
-nomFichier = "disqueApprent"
+nomFichier = "xor.exemples"
 
 nombreIn = 2
 nombreOut = 1
@@ -19,7 +20,7 @@ with open(nomFichier, "w") as fichier:
 	fichier.write('\n')
 	fichier.write('\n')
 	for _ in range(nombreEx):
-		couple = [random.uniform(-0.2, 1.2), random.uniform(-0.2, 1.2)]
+		couple = [random.uniform(0.0, 1.0), random.uniform(0.0, 1.0)]
 		fichier.write(str(couple[0]) + ' ' + str(couple[1]))
 		fichier.write('\n')
 		r = fonction(couple)

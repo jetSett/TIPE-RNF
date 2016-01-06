@@ -9,12 +9,12 @@ import numpy as np
 
 fig = plt.figure()
 ax = fig.gca(projection='3d')
-X = np.arange(-0.1, 1.1, 0.01)
-Y = np.arange(-0.1, 1.1, 0.01)
+X = np.arange(-0.05, 1.1, 0.1)
+Y = np.arange(-0.05, 1.1, 0.1)
 
 Z = [ [i]*len(Y) for i in range(len(X))]
 
-res = Reseau('ReseauDisque3')
+res = Reseau('ReseauXOR')
 
 i= 0
 for x in X:
