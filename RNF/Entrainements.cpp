@@ -24,10 +24,12 @@ double Reseau::descente_gradiant(Ensemble& app, double epsilon){
         /// propagation dans le sens classique, on garde les E
         H[0] = W[0]*Entree;
         E[0] = appliquerFonction(H[0], activ[0], 0);
-        for(unsigned n=1; n<=C; ++n){
-            H[n] = W[n]*E[n-1];
+        for(unsigned n=1; n<=C-1; ++n){
+            H[n] = W[n]*E[n-1]+coefBiais[n];
             E[n] = appliquerFonction(H[n],activ[n], 0);
         }
+        H[C] = W[C]*E[C-1]+coefBiais[C];
+        E[C] = appliquerFonction(H[C],activ[C], 0);
         vec Y = E[C];
 
         double e = accu(abs(T-Y));
@@ -35,13 +37,16 @@ double Reseau::descente_gradiant(Ensemble& app, double epsilon){
         erreur += 0.5*(e*e);
 
         vector<mat> V(C+1);
+
+        coefBiais[C] += epsilon*(T-Y);
+
         ///retropropagation
         V[C] = appliquerFonction(W[C]*E[C-1], activ[C], 1)%(T-Y);
-        for(unsigned n=C; n>=2; --n){
+        for(unsigned n=C; n>=1; --n){
             vec K = ((W[n]).t())*V[n];
             V[n-1] = appliquerFonction(H[n-1], activ[n-1], 1)%(K);
+            coefBiais[n-1] = epsilon*K;
         }
-        V[0] = appliquerFonction(H[0], activ[0], 1)%(W[1].t()*V[1]);
 
         /// mise à jour des poids
 

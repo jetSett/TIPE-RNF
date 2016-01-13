@@ -101,7 +101,7 @@ vec Reseau::appliquerFonction(const arma::vec& e, functionDescriptor f, int n){
 vec Reseau::resultat(const vec& e){
     vec s = e;
     for(unsigned i = 0; i<poids_couches.size(); ++i){
-        s = appliquerFonction(poids_couches[i]*s, activ[i], 0);
+        s = appliquerFonction(poids_couches[i]*s+coefBiais[i], activ[i], 0);
     }
     return s;
 }

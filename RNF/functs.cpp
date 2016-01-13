@@ -35,7 +35,12 @@ double hardlims(double e, int n){
 }
 
 double sigimoide(double e, int n){
-    return n==1?(1/(2+exp(e)+exp(-e))):(1/(1+exp(-e)));
+    if(n == 1){
+        float a = exp(-e);
+        return a/((1+a)*(1+a));
+    }else{
+        return (1/(1+exp(-e)));
+    }
 }
 
 double arctan(double e, int n){
