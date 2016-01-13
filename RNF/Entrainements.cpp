@@ -22,7 +22,7 @@ double Reseau::descente_gradiant(Ensemble& app, double epsilon){
 
         vector<mat> H(C+1);
         /// propagation dans le sens classique, on garde les E
-        H[0] = W[0]*Entree;
+        H[0] = W[0]*Entree+coefBiais[0];
         E[0] = appliquerFonction(H[0], activ[0], 0);
         for(unsigned n=1; n<=C-1; ++n){
             H[n] = W[n]*E[n-1]+coefBiais[n];
