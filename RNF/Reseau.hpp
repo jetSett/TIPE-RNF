@@ -20,6 +20,7 @@ struct Ensemble{
 
     std::string print_apprentiss();
 
+    Ensemble(std::vector<std::pair<arma::vec, arma::vec>> e) : ens(e){}
     Ensemble(){}
     Ensemble(const std::string& file){
         load(file);
@@ -38,6 +39,18 @@ struct Ensemble{
     void load(const std::string& file);
 };
 
+struct ReseauStruct{
+    unsigned n;
+
+    std::vector<unsigned> tailles; //de taille n+1 !
+
+    std::vector<arma::vec> coefBiais; // de taille n
+
+    std::vector<arma::mat> poids_couches; // de taille n
+
+    std::vector<functionDescriptor> activ; // de taille n
+};
+
 class Reseau{
 public:
     Reseau(unsigned entrees, unsigned sorties, unsigned nbCouchesCache,
@@ -49,8 +62,6 @@ public:
 
     arma::vec resultat(const arma::vec& e);
 
-    arma::vec appliquerFonction(const arma::vec& e, functionDescriptor f, int n);
-
     void save(const std::string& file);
     void load(const std::string& file);
 
@@ -59,19 +70,35 @@ public:
     std::string print_reseau();
     void decrire_reseau();
 
-    std::pair<std::vector<arma::mat>, std::vector<arma::mat>> gradiants(std::pair<arma::vec, arma::vec> in_out); //en first les coefs de biais, en second les gradiants
     double verification(const Ensemble& ens);
 
-    double descente_gradiant(Ensemble& app, double epsilon);
+    double descente_gradient(Ensemble& app, double epsilon);
+
+    double descente_gradient_2(Ensemble& app, double epsilon);
+
+    double gradient_conjugue(Ensemble& ens, double epsilon, unsigned cycles);
 
 //private:
-    std::vector<functionDescriptor> activ;
+    std::vector<functionDescriptor>& activ;
 
-    std::vector<arma::vec> coefBiais;
+    std::vector<arma::vec>& coefBiais;
 
-    std::vector<arma::mat> poids_couches;
+    std::vector<arma::mat>& poids_couches;
+
+    ReseauStruct structure;
 
     unsigned _entrees, _sorties, _nbCouchesCache;
 };
+
+arma::vec appliquerFonction(const arma::vec& e, functionDescriptor f, int derivation);
+
+void add_Reseau(ReseauStruct& r1, ReseauStruct& r2);
+void mult_Reseau(ReseauStruct& r, double alpha);
+
+ReseauStruct reseauVide(ReseauStruct& r);
+
+arma::vec calculerSortie(ReseauStruct& reseau, arma::vec E);
+
+ReseauStruct calculerGradient(ReseauStruct& reseau, arma::vec E, arma::vec sortieAttendue);
 
 #endif // RESEAU_HPP_INCLUDED

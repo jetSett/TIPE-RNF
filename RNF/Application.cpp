@@ -95,7 +95,7 @@ void Application::run(int argc, char** argv){
                         app.load(vm["entree"].as<std::string>());
 
                         if(methode == "gradDesc"){
-                            r.descente_gradiant(app, vm["epsilon"].as<float>());
+                            r.descente_gradient(app, vm["epsilon"].as<float>());
                         }else{
                             std::cerr << "Merci de préciser une methode valable" << std::endl;
                         }

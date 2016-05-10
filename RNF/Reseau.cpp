@@ -37,15 +37,24 @@ std::string Ensemble::print_apprentiss(){
 Reseau::Reseau(unsigned entrees, unsigned sorties, unsigned nbCouchesCache,
                 const std::vector<unsigned>& nbNeurParCouche,
                 const std::vector<functionDescriptor>& activations,
-                const std::vector<float>& coefBiasParCouche) : activ(activations),
-                _entrees(entrees), _sorties(sorties), _nbCouchesCache(nbCouchesCache){
+                const std::vector<float>& coefBiasParCouche) :
+                _entrees(entrees), _sorties(sorties), _nbCouchesCache(nbCouchesCache),
+                poids_couches(structure.poids_couches), activ(structure.activ), coefBiais(structure.coefBiais){
 
 
     assert(nbNeurParCouche.size() == nbCouchesCache);
     assert(activations.size() == (nbCouchesCache+1));
     assert(coefBiasParCouche.size() == (nbCouchesCache+1));
 
+    structure.activ = activations;
 
+    structure.n = coefBiasParCouche.size();
+
+    structure.tailles = std::vector<unsigned>(nbCouchesCache+1);
+    structure.tailles[0] = entrees;
+    for(unsigned i =0; i<nbCouchesCache; ++i){
+        structure.tailles[i+1] = nbNeurParCouche[i];
+    }
 
     poids_couches.resize(nbCouchesCache+1);
     coefBiais.resize(nbCouchesCache+1);
@@ -68,15 +77,15 @@ Reseau::Reseau(unsigned entrees, unsigned sorties, unsigned nbCouchesCache,
     }
 }
 
-Reseau::Reseau(const std::string& file){
+Reseau::Reseau(const std::string& file) : poids_couches(structure.poids_couches), activ(structure.activ), coefBiais(structure.coefBiais){
     load(file);
 }
 
-vec Reseau::appliquerFonction(const arma::vec& e, functionDescriptor f, int n){
+vec appliquerFonction(const arma::vec& e, functionDescriptor f, int derivation){
     if(f.nom == "hardlim_vect"){
         vec s = e;
         for(unsigned i = 0; i<e.size(); ++i){
-            s(i) = f.func(e(i), n);
+            s(i) = f.func(e(i), derivation);
         }
         double m = max(s);
         bool c = false;
@@ -92,18 +101,15 @@ vec Reseau::appliquerFonction(const arma::vec& e, functionDescriptor f, int n){
     }else{
         vec s = e;
         for(unsigned i = 0; i<e.size(); ++i){
-            s(i) = f.func(e(i), n);
+            s(i) = f.func(e(i), derivation);
         }
         return s;
     }
 }
 
 vec Reseau::resultat(const vec& e){
-    vec s = e;
-    for(unsigned i = 0; i<poids_couches.size(); ++i){
-        s = appliquerFonction(poids_couches[i]*s+coefBiais[i], activ[i], 0);
-    }
-    return s;
+
+    return calculerSortie(structure, e);
 }
 
 double Reseau::verification(const Ensemble& ens){
@@ -147,9 +153,11 @@ void Reseau::load(const std::string& file){
     unsigned s = 0;
     stream >> s;
     coefBiais.resize(s);
+    structure.tailles.resize(s+1);
     for(unsigned i = 0; i<s; ++i){
         unsigned t = 0;
         stream >> t;
+        structure.tailles[i+1] = t;
         coefBiais[i] = vec(t);
         for(unsigned j = 0; j<t; ++j){
             stream >> coefBiais[i](j);
@@ -171,7 +179,9 @@ void Reseau::load(const std::string& file){
     }
 
     _nbCouchesCache = poids_couches.size() - 1;
-    _entrees = poids_couches[0].n_rows;
+    _entrees = poids_couches[0].n_cols;
+    structure.tailles[0] = _entrees;
+    structure.n = poids_couches.size();
     _sorties = poids_couches[poids_couches.size()-1].n_rows;
 }
 
@@ -199,35 +209,98 @@ std::string Reseau::print_resultat(const Ensemble& ens){
     return oss.str();
 }
 
-
-//std::pair<std::vector<arma::mat>, std::vector<arma::mat>> Reseau::gradiants(std::pair<arma::vec, arma::vec> in_out){
-//        std::pair<std::vector<arma::mat>, std::vector<arma::mat>> paire; //en first les coefs de biais, en second les gradiants
-//        int M = poids_couches.size();
-//        vector<vec> a(M+1);
-//        a[0] = in_out.first;
-//        for(int k = 1; k<=M; ++k){
-//            a[k] = appliquerFonction(poids_couches[k-1]*a[k-1]-coefBiais[k-1], activ[k-1], 0);
-//        } ///Aller
-//
-//        vector<mat> s(M);
-//
-//        s[M-1] = -2*fPoint(coefBiais[M-1], activ[M-1])*coefBiais[M-1]*(in_out.second-a[M]);
-//        for(int k = M-2; k>=0; --k){
-//            s[k] = fPoint(coefBiais[k], activ[k])*poids_couches[k+1].t()*s[k+1];
-//        } ///Retour
-//        paire.first.resize(coefBiais.size());
-//        paire.second.resize(poids_couches.size());
-//        for(int k = 0; k<M; ++k){
-//            paire.second[k] = s[k]*(a[k].t());
-//            paire.first[k] = s[k];
-//        }
-//        return paire;
-//}
-
 void Reseau::decrire_reseau(){
     unsigned k = 0;
-    for(auto m : poids_couches){
+    for(auto m : structure.poids_couches){
         cout << k << " : " << m.n_rows << " x " << m.n_cols << endl;
         k++;
     }
+    k = 0;
+    for(unsigned i : structure.tailles){
+        cout << k << " taille : " << i << endl;
+        k++;
+    }
+}
+
+ReseauStruct reseauVide(ReseauStruct& mod){
+    ReseauStruct res;
+    res.tailles = mod.tailles;
+    res.activ = mod.activ;
+    res.n = mod.n;
+    res.coefBiais.resize(res.n);
+    res.poids_couches.resize(res.n);
+    for(unsigned k = 0; k<res.n; ++k){
+        res.coefBiais[k] = vec(res.tailles[k+1], fill::zeros);
+        res.poids_couches[k] = mat(res.tailles[k+1], res.tailles[k], fill::zeros);
+    }
+    return res;
+}
+
+void add_Reseau(ReseauStruct& r1, ReseauStruct& r2){
+    assert(r1.n == r2.n);
+    unsigned& n = r1.n;
+    for(unsigned i = 0; i<n+1; ++i){
+        assert(r1.tailles[i] == r2.tailles[i]);
+    }
+    for(unsigned i = 0; i<n; ++i){
+        r1.coefBiais[i] += r2.coefBiais[i];
+        r1.poids_couches[i] += r2.poids_couches[i];
+    }
+}
+
+void mult_Reseau(ReseauStruct& res, double alpha){
+    unsigned& n = res.n;
+
+    for(unsigned i = 0; i<n; ++i){
+        res.coefBiais[i] *= alpha;
+        res.poids_couches[i] *= alpha;
+    }
+}
+
+arma::vec calculerSortie(ReseauStruct& reseau, arma::vec E){
+    assert(E.n_rows == reseau.poids_couches[0].n_cols);
+    unsigned& n = reseau.n;
+    std::vector<arma::vec> Y(n+1), H(n+1);
+    Y[0] = E;
+    H[0] = E;
+    for(unsigned i=1; i<=n; ++i){
+        H[i] = reseau.poids_couches[i-1]*Y[i-1] + reseau.coefBiais[i-1];
+        Y[i] = appliquerFonction(H[i], reseau.activ[i-1], 0);
+    }
+    return Y[n];
+}
+
+ReseauStruct calculerGradient(ReseauStruct& reseau, arma::vec E, arma::vec sortieAttendue){
+    assert(E.n_rows == reseau.poids_couches[0].n_cols);
+    unsigned& n = reseau.n;
+    std::vector<arma::vec> Y(n+1), H(n+1);
+    Y[0] = E;
+    H[0] = E;
+    for(unsigned i=1; i<=n; ++i){
+        H[i] = reseau.poids_couches[i-1]*Y[i-1] + reseau.coefBiais[i-1];
+        Y[i] = appliquerFonction(H[i], reseau.activ[i-1], 0);
+    }
+
+    std::vector<arma::vec> V(n+1); // on en crée un de plus pour coller aux formules
+
+    ReseauStruct gradient;
+
+    gradient.n = n;
+    gradient.activ = reseau.activ;
+    gradient.poids_couches.resize(n);
+    gradient.coefBiais.resize(n);
+    gradient.tailles = reseau.tailles;
+
+    V[n] = -2*(sortieAttendue-Y[n])%(appliquerFonction(H[n], reseau.activ[n-1], 1));
+    gradient.poids_couches[n-1] = V[n]*(Y[n-1].t());
+    gradient.coefBiais[n-1] = V[n];
+
+    for(unsigned k = n-1; k >= 1; k--){
+        V[k] = (reseau.poids_couches[k].t())*(V[k+1]%(appliquerFonction(H[k+1], reseau.activ[k], 1)));
+        auto Hp = appliquerFonction(H[k], reseau.activ[k-1], 1);
+        gradient.poids_couches[k-1] = (V[k]%Hp)*(Y[k-1].t());
+        gradient.coefBiais[k-1] = V[k]%Hp;
+    }
+
+    return gradient;
 }
