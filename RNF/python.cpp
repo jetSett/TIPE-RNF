@@ -41,6 +41,7 @@ BOOST_PYTHON_MODULE(RNF)
            const std::vector<unsigned>&,
            const std::vector<functionDescriptor>&,
            const std::vector<float>& >() )
+    .def("decrire_reseau", &Reseau::decrire_reseau)
     .def("resultat", &Reseau::resultat)
     .def("apprentGrad", &Reseau::descente_gradient)
     .def("apprentGrad2", &Reseau::descente_gradient_2)
@@ -50,6 +51,7 @@ BOOST_PYTHON_MODULE(RNF)
     .def("__del__", emptyFunc<Reseau>)
     .def("print_resultat", &Reseau::print_resultat)
     .def("verification", &Reseau::verification)
+    .def("is_ok", &Reseau::systeme_ok)
     ;
 
     class_<EnsembleHopfield>("EnsembleHopfield", init<const std::vector<arma::vec>&>())
@@ -59,5 +61,9 @@ BOOST_PYTHON_MODULE(RNF)
     class_<Hopfield>("Hopfield", init<EnsembleHopfield&>())
     .def("result", &Hopfield::result)
     .def("__del__", emptyFunc<Hopfield>)
+    ;
+
+    class_<functionDescriptor>("functionDescriptor", init<const std::string&>())
+    .def("__del__", emptyFunc<functionDescriptor>)
     ;
 }

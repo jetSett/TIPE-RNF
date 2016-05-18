@@ -3,7 +3,7 @@
 using namespace std;
 using namespace arma;
 
-double Reseau::descente_gradient(Ensemble& app, double epsilon){
+double Reseau::descente_gradient(Ensemble& app, double epsilon, unsigned pas){
 
     const std::vector<std::pair<arma::vec, arma::vec>>& ens = app.ens;
     unsigned int C = poids_couches.size()-1;
@@ -33,7 +33,7 @@ double Reseau::descente_gradient(Ensemble& app, double epsilon){
         E[C] = appliquerFonction(H[C],activ[C], 0);
         vec Y = E[C];
 
-        double e = accu(abs(T-Y));
+        double e = norm(T-Y)*norm(T-Y);
 
         erreur += 0.5*(e*e);
 
@@ -76,27 +76,31 @@ double Reseau::descente_gradient(Ensemble& app, double epsilon){
     return erreur;
 }
 
-double Reseau::descente_gradient_2(Ensemble& ens, double epsilon){
-    auto gradTot = reseauVide(structure);
+double Reseau::descente_gradient_2(Ensemble& ens, double epsilon, unsigned pas){
+//    auto gradTot = reseauVide(structure);
+    double epsMoy = 0;
+    unsigned i = 0;
     double err = 0;
     for(auto exemple : ens.ens){
         vec sortieAtt = exemple.second;
         vec entree = exemple.first;
 
         vec sortie = resultat(entree);
-        double e = accu(sortie - sortieAtt);
-        err += e*e;
+        double e = norm(sortie - sortieAtt)*norm(sortie - sortieAtt);
+        err += e;
 
         auto grad = calculerGradient(structure, entree, sortieAtt);
-
-        add_Reseau(gradTot, grad);
+        double alpha = rechercher_alpha(epsilon, structure, grad, entree, sortieAtt, pas);
+        mult_Reseau(grad, -alpha);
+        add_Reseau(structure, grad);
+        epsMoy = (i*epsMoy+epsilon)/(i+1);
+        i++;
     }
-    mult_Reseau(gradTot, -epsilon);
-    add_Reseau(structure, gradTot);
+//    Dn(epsMoy)
     return err;
 }
 
-double Reseau::gradient_conjugue(Ensemble& ens, double epsilon, unsigned cycles){
+double Reseau::gradient_conjugue(Ensemble& ens, double epsilon, unsigned cycles, unsigned pas){
     auto direction = reseauVide(structure);
     double err = 0;
     for(auto exemple : ens.ens){
@@ -104,40 +108,61 @@ double Reseau::gradient_conjugue(Ensemble& ens, double epsilon, unsigned cycles)
         vec entree = exemple.first;
 
         vec sortie = resultat(entree);
-        double e = sum(sortie - sortieAtt);
+        double e = norm(sortie - sortieAtt)*norm(sortie - sortieAtt);
         err += e*e;
 
 
-        ReseauStruct X = structure;
+        ReseauStruct& X = structure;
         auto gradX = calculerGradient(X, entree, sortieAtt);
         ReseauStruct D = calculerGradient(X, entree, sortieAtt);
-        mult_Reseau(D, 0.5);
+
+        double alpha = rechercher_alpha(epsilon, X, D, entree, sortieAtt, pas);
+
+        ReseauStruct D1 = mult_Reseau_o(D, alpha);
+
         add_Reseau(direction, D);
+
 
         for(unsigned k =0; k<cycles; k++){
 
-            mult_Reseau(D, -epsilon);
-            add_Reseau(X, D); // on a X_k+1
-            mult_Reseau(D, -1/epsilon);
+            double alpha = rechercher_alpha(epsilon, X, D, entree, sortieAtt, pas);
 
-            auto gradXp =calculerGradient(X, entree, sortieAtt);
+            D1 = mult_Reseau_o(D, alpha);
+
+            add_Reseau(X, D1); // on a X_k+1
+
+            auto gradXp = calculerGradient(X, entree, sortieAtt);
 
             float gamma = norm(calculerSortie(gradXp, entree))/norm(calculerSortie(gradX, entree));
             gamma *= gamma;
 
             gradX = gradXp;
 
-            mult_Reseau(gradX, 0.5);
             mult_Reseau(D, gamma);
-            mult_Reseau(gradX, 2);
 
             add_Reseau(D, gradXp);
 
-            add_Reseau(direction, D);
         }
+            add_Reseau(direction, D);
 
     }
-    mult_Reseau(direction, -epsilon);
-    add_Reseau(structure, direction);
     return err;
+}
+
+double Reseau::rechercher_alpha(double epsilon, ReseauStruct &res, ReseauStruct& dir, vec& entree, vec& sortieAtt, unsigned pas){
+    double minEps = epsilon;
+    auto d1 = mult_Reseau_o(dir, epsilon);
+    ReseauStruct test = add_Reseau_o(res, d1);
+    double minErr = norm(calculerSortie(test, entree)-sortieAtt);
+    for(unsigned k = 0; k<pas; ++k){
+        epsilon/=2;
+        d1 = mult_Reseau_o(dir, epsilon);
+        test = add_Reseau_o(res, d1);
+        double err = norm(calculerSortie(test, entree)-sortieAtt);
+        if(err < minErr and reseau_ok(test)){
+            minErr = err;
+            minEps = epsilon;
+        }
+    }
+    return minEps;
 }

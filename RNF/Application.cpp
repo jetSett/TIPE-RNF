@@ -71,16 +71,10 @@ void Application::run(int argc, char** argv){
                 fontions.push_back(f);
             }
 
-            std::vector<float> coefBiais;
+            std::vector<float> coefBiais(0);
 
             if(vm.count("coefBiais"))
                 coefBiais = vm["coefBiais"].as<std::vector<float>>();
-            else{
-                coefBiais.resize(vm["nbCouchesCache"].as<unsigned>()+1, 0);
-                for(float &a : coefBiais){
-                    a = 0.5; ///TODO: Fixer ça pour mettre des poids aléatoires
-                }
-            }
 
             Reseau r(entrees, sorties, nbCoucheCache, nbNeurPCouche, fontions, coefBiais);
             r.print_reseau();
@@ -95,7 +89,7 @@ void Application::run(int argc, char** argv){
                         app.load(vm["entree"].as<std::string>());
 
                         if(methode == "gradDesc"){
-                            r.descente_gradient(app, vm["epsilon"].as<float>());
+                            r.descente_gradient(app, vm["epsilon"].as<float>(), 0);
                         }else{
                             std::cerr << "Merci de préciser une methode valable" << std::endl;
                         }

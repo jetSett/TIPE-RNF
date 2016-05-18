@@ -44,36 +44,41 @@ Reseau::Reseau(unsigned entrees, unsigned sorties, unsigned nbCouchesCache,
 
     assert(nbNeurParCouche.size() == nbCouchesCache);
     assert(activations.size() == (nbCouchesCache+1));
-    assert(coefBiasParCouche.size() == (nbCouchesCache+1));
+    assert(coefBiasParCouche.size() == (nbCouchesCache+1) or coefBiasParCouche.size() == 0);
 
     structure.activ = activations;
 
-    structure.n = coefBiasParCouche.size();
+    structure.n = nbNeurParCouche.size()+1;
 
-    structure.tailles = std::vector<unsigned>(nbCouchesCache+1);
+    structure.tailles = std::vector<unsigned>(nbCouchesCache+2);
     structure.tailles[0] = entrees;
     for(unsigned i =0; i<nbCouchesCache; ++i){
         structure.tailles[i+1] = nbNeurParCouche[i];
     }
+    structure.tailles[nbCouchesCache+1] = sorties;
 
     poids_couches.resize(nbCouchesCache+1);
     coefBiais.resize(nbCouchesCache+1);
     if(nbCouchesCache == 0){
         poids_couches[0] = mat(sorties, entrees, fill::randu);
-        coefBiais[0] = vec(sorties);
-        coefBiais[0].fill(coefBiasParCouche[0]);
+        coefBiais[0] = vec(sorties, fill::randu);
+        if(not coefBiasParCouche.empty())
+            coefBiais[0].fill(coefBiasParCouche[0]);
     }else{
         poids_couches[0] = mat(nbNeurParCouche[0], entrees, fill::randu);
-        coefBiais[0] = vec(nbNeurParCouche[0]);
-        coefBiais[0].fill(coefBiasParCouche[0]);
+        coefBiais[0] = vec(nbNeurParCouche[0], fill::randu);
+        if(not coefBiasParCouche.empty())
+            coefBiais[0].fill(coefBiasParCouche[0]);
         for(unsigned i = 0; i<nbCouchesCache-1; ++i){
             poids_couches[i+1] = mat(nbNeurParCouche[i+1], nbNeurParCouche[i], fill::randu);
-            coefBiais[i+1] = vec(nbNeurParCouche[i+1]);
-            coefBiais[i+1].fill(coefBiasParCouche[i+1]);
+            coefBiais[i+1] = vec(nbNeurParCouche[i+1], fill::randu);
+            if(not coefBiasParCouche.empty())
+                coefBiais[i+1].fill(coefBiasParCouche[i+1]);
         }
         poids_couches[poids_couches.size()-1] = mat(sorties, nbNeurParCouche[nbCouchesCache-1], fill::randu);
-        coefBiais[poids_couches.size()-1] = vec(sorties);
-        coefBiais[poids_couches.size()-1].fill(coefBiasParCouche[poids_couches.size()-1]);
+        coefBiais[poids_couches.size()-1] = vec(sorties, fill::randu);
+        if(not coefBiasParCouche.empty())
+            coefBiais[poids_couches.size()-1].fill(coefBiasParCouche[poids_couches.size()-1]);
     }
 }
 
@@ -248,6 +253,13 @@ void add_Reseau(ReseauStruct& r1, ReseauStruct& r2){
     }
 }
 
+ReseauStruct add_Reseau_o(ReseauStruct& r1, ReseauStruct& r2){
+    ReseauStruct r = reseauVide(r1);
+    add_Reseau(r, r1);
+    add_Reseau(r, r2);
+    return r;
+}
+
 void mult_Reseau(ReseauStruct& res, double alpha){
     unsigned& n = res.n;
 
@@ -257,15 +269,25 @@ void mult_Reseau(ReseauStruct& res, double alpha){
     }
 }
 
+ReseauStruct mult_Reseau_o(ReseauStruct& r, double alpha){
+    ReseauStruct res = reseauVide(r);
+    mult_Reseau(res, alpha);
+    return res;
+}
+
+
 arma::vec calculerSortie(ReseauStruct& reseau, arma::vec E){
     assert(E.n_rows == reseau.poids_couches[0].n_cols);
-    unsigned& n = reseau.n;
+    unsigned n = reseau.n;
     std::vector<arma::vec> Y(n+1), H(n+1);
+//    Dn(E)
     Y[0] = E;
     H[0] = E;
     for(unsigned i=1; i<=n; ++i){
         H[i] = reseau.poids_couches[i-1]*Y[i-1] + reseau.coefBiais[i-1];
         Y[i] = appliquerFonction(H[i], reseau.activ[i-1], 0);
+//        Dn(i)
+//        Dn(Y[i])
     }
     return Y[n];
 }
@@ -303,4 +325,18 @@ ReseauStruct calculerGradient(ReseauStruct& reseau, arma::vec E, arma::vec sorti
     }
 
     return gradient;
+}
+
+bool reseau_ok(ReseauStruct& r){
+        for(auto a : r.coefBiais){
+            if (not a.is_finite()){
+                return false;
+            }
+        }
+        for(auto a : r.poids_couches){
+            if (not a.is_finite()){
+                return false;
+            }
+        }
+        return true;
 }
